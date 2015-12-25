@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from frontside import OptionsParser
 import mock
 

@@ -1,3 +1,7 @@
 # -*- coding: utf-8 -*-
-from options_parser import OptionsParser
 from frontside import Frontside
+import mock
+
+
+def test_start():
+    assert True is True

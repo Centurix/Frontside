@@ -3,6 +3,7 @@
 import sys
 import logging
 from frontside import OptionsParser
+from frontside import Frontside
 
 __description__ = 'Frontside. M.A.M.E. Front end written in Python using pyGame. Good for frame buffers.'
 __author__ = 'Chris Read'
@@ -28,6 +29,9 @@ def main():
 
     logging.basicConfig(filename=options.log_file, level=OptionsParser.LOG_LEVELS[options.log_level])
     logging.info('Entering frontside')
+
+    application = Frontside(options)
+    application.start()
 
     return EXIT_OK
 
