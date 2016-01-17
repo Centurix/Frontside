@@ -1,25 +1,19 @@
 # -*- coding: utf-8 -*-
 from mame import Mame
-from configobj import ConfigObj
-from validate import Validator
+
+"""
+How do we manage the ROM list generation?
+
+"""
 
 
 class Frontside(object):
-    def __init__(self, options):
-        print(options)
-        pass
+    """
+    The main Frontside application
+    """
+    def __init__(self, config):
+        self.config = config
 
     def start(self):
-        vdt = Validator()
-        vdt.check('integer', 10, 10)
-        config = ConfigObj(
-            configspec='./default.ini',
-            infile='./frontside.ini',
-            create_empty=True,
-            file_error=False,
-            encoding='UTF-8'
-        )
-        config.validate(vdt, copy=True)
-        config.write()
-#        mame = Mame(config)
-        pass
+        mame = Mame(self.config)
+        mame.play('pengo')

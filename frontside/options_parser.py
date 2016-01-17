@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import optparse
+import argparse
 import logging
 
 
@@ -14,26 +14,45 @@ class OptionsParser(object):
 
     @staticmethod
     def parse(description, version):
-        # Parse command line options
-        parser = optparse.OptionParser(
-            usage='usage: %prog [options] file\n' + description,
-            version='%prog ' + version
-        )
+        """
 
-        parser.add_option(
-            '-l',
-            '--log',
-            dest='log_file',
-            default='./frontside.log',
-            help='specify the log file location'
+        :param description:
+        :param version:
+        :return:
+        """
+        parser = argparse.ArgumentParser(
+            description=description,
+            add_help=True
         )
-        parser.add_option(
+        parser.add_argument(
+            '-l',
+            '--log_file',
+            dest='log_file',
+            help='Log file location',
+            default='./frontside.log'
+        )
+        parser.add_argument(
             '-L',
             '--log_level',
             dest='log_level',
+            help='Log level',
             default='info',
-            help='specify the log level (%s)' % ', '.join(key for key in OptionsParser.LOG_LEVELS))
+            choices=[key for key in OptionsParser.LOG_LEVELS]
+        )
+        parser.add_argument(
+            '-C',
+            '--config_file',
+            dest='config_file',
+            help='Config file location',
+            default='./frontside.ini'
+        )
+        parser.add_argument(
+            '-v',
+            '--version',
+            help='Show the version number',
+            action='version',
+            version=version
+        )
+        (options, args) = parser.parse_known_args()
 
-        (options, args) = parser.parse_args()
-
-        return options
+        return vars(options)
