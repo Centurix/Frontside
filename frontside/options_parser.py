@@ -47,6 +47,13 @@ class OptionsParser(object):
             default='./frontside.ini'
         )
         parser.add_argument(
+            '-d',
+            '--database_path',
+            dest='database_path',
+            help='Database file location',
+            default='./frontside.db'
+        )
+        parser.add_argument(
             '-v',
             '--version',
             help='Show the version number',

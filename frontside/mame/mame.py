@@ -19,7 +19,14 @@ class Mame(object):
             params.append(rom_name)
         process = subprocess.Popen(params, stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
-        return stdout
+        roms = []
+        for line in stdout.split('\n'):
+            roms.append({
+                "rom": line[:17].rstrip(),
+                "description": line[18:].replace('"', '').rstrip()
+            })
+        roms.pop(0)
+        return roms
 
     def list_xml(self, rom_name=None):
         params = [self.mame, '-rompath', self.rom_path, '-listxml']

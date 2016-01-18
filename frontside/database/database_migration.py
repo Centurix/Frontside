@@ -51,16 +51,16 @@ class DatabaseMigration(object):
         self.cursor.execute("INSERT INTO versions (version, type) VALUES ('%s', 'd')" % version)
         self.connection.commit()
 
-    # def migration_create_roms(self):
-    #     """1"""
-    #     self.cursor.execute(
-    #         "CREATE TABLE roms "
-    #         "(rom VARCHAR(14) NOT NULL, "
-    #         "description VARCHAR(150) NULL, "
-    #         "found INT NOT NULL DEFAULT(0))"
-    #     )
-    #     self.cursor.execute("CREATE INDEX idx_roms on roms (rom ASC, description ASC, found ASC)")
-    #
+    def migration_create_roms(self):
+        """1"""
+        self.cursor.execute(
+            "CREATE TABLE roms "
+            "(rom VARCHAR(14) NOT NULL, "
+            "description VARCHAR(150) NULL, "
+            "found INT NOT NULL DEFAULT(0))"
+        )
+        self.cursor.execute("CREATE INDEX idx_roms on roms (rom ASC, description ASC, found ASC)")
+
     # def migration_create_metadata(self):
     #     """2"""
     #     self.cursor.execute(

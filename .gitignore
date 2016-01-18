@@ -3,3 +3,4 @@ roms
 *.log
 *.pyc
 frontside.ini
+frontside.db

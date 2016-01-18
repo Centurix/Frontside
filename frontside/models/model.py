@@ -174,7 +174,7 @@ class Model(object):
 
     def build_insert_query(self):
         fields = "`" + ("`,`".join([key for key, value in self.insert_fields.items()])) + "`"
-        values = "'" + ("','".join([str(value) for key, value in self.insert_fields.items()])) + "'"
+        values = "'" + ("','".join([str(value).replace("'", "''") for key, value in self.insert_fields.items()])) + "'"
 
         return "INSERT INTO %s (%s) VALUES (%s)" % (self.table, fields, values)
 
