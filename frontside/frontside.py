@@ -22,10 +22,12 @@ class Frontside(object):
         DatabaseMigration(connection)
 
         mame = Mame(self.__config)
+        roms = mame.list_xml('pengo')
+        print(roms)
         # mame.play('pengo')
-        scanner = Scanner(self.__config)
-        scanner.register_observer(self)
-        scanner.start()
+        # scanner = Scanner(self.__config)
+        # scanner.register_observer(self)
+        # scanner.start()
 
     def notify(self, observable, percentage):
         print('Progress updated: %d%%' % percentage)
