@@ -6,6 +6,7 @@ from frontside import OptionsParser
 from frontside import ConfigParser
 from frontside import Frontside
 
+
 __description__ = 'Frontside. M.A.M.E. Front end using pyGame. Good for frame buffers.'
 __author__ = 'Chris Read'
 __version__ = '0.0.1'

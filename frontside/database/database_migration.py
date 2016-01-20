@@ -61,18 +61,20 @@ class DatabaseMigration(object):
         )
         self.cursor.execute("CREATE INDEX idx_roms on roms (rom ASC, description ASC, found ASC)")
 
-    # def migration_create_metadata(self):
-    #     """2"""
-    #     self.cursor.execute(
-    #         "CREATE TABLE metadata ("
-    #         "rom VARCHAR(14) NOT NULL, "
-    #         "year VARCHAR(20) NULL, "
-    #         "manufacturer VARCHAR(64) NULL, "
-    #         "players INT NULL, "
-    #         "status VARCHAR(10) NULL, "
-    #         "emulation VARCHAR(10) NULL, "
-    #         "color VARCHAR(10) NULL, "
-    #         "sound VARCHAR(10) NULL,"
-    #         "graphic VARCHAR(10) NULL"
-    #         ")"
-    #     )
+    def migration_create_metadata(self):
+        """2"""
+        self.cursor.execute(
+            "CREATE TABLE metadata ("
+            "name VARCHAR(14) NOT NULL, "
+            "year VARCHAR(20) NULL, "
+            "manufacturer VARCHAR(64) NULL, "
+            "players INT NULL, "
+            "status VARCHAR(10) NULL, "
+            "emulation VARCHAR(10) NULL, "
+            "color VARCHAR(10) NULL, "
+            "sound VARCHAR(10) NULL,"
+            "graphic VARCHAR(10) NULL,"
+            "cloneof VARCHAR(14) NULL,"
+            "savestate VARCHAR(20) NULL"
+            ")"
+        )

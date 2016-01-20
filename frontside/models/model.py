@@ -130,6 +130,8 @@ class Model(object):
         if not type(insert_fields) == dict:
             raise
 
+        insert_fields = self.filter_fields(insert_fields)
+
         self.update_fields = dict()
         self.insert_fields = dict(self.insert_fields.items() + insert_fields.items())
 
@@ -138,6 +140,8 @@ class Model(object):
     def update(self, update_fields):
         if not type(update_fields) == dict:
             raise
+
+        update_fields = self.filter_fields(update_fields)
 
         self.insert_fields = dict()
         self.update_fields = dict(self.update_fields.items() + update_fields.items())
@@ -185,3 +189,13 @@ class Model(object):
 
     def build_delete_query(self):
         return "DELETE FROM %s %s" % (self.table, self.get_predicates())
+
+    def fields(self):
+        return self.cursor.execute('PRAGMA table_info(%s)' % self.table).fetchall()
+
+    def filter_fields(self, fields):
+        keys = [key[1] for key in self.fields()]
+        unwanted = set(fields) - set(keys)
+        for unwanted_key in unwanted:
+            del fields[unwanted_key]
+        return fields
