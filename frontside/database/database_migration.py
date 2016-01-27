@@ -19,6 +19,13 @@ class DatabaseMigration(object):
                 migrations[change_version]()
                 self.update_version(change_version)
 
+    def downgrade(self, version):
+        downgrades = self.get_downgrade_methods()
+        for change_version in sorted(downgrades, reverse=True):
+            if change_version >= version:
+                downgrades[change_version]()
+                self.update_version(change_version)
+
     def get_version(self):
         try:
             self.cursor.execute("CREATE TABLE IF NOT EXISTS versions (version INT NULL, type CHAR(1) NOT NULL)")
@@ -41,6 +48,15 @@ class DatabaseMigration(object):
 
         return migrations
 
+    def get_downgrade_methods(self):
+        downgrades = {}
+        for method in dir(self):
+            attr = getattr(self, method)
+            if callable(attr) and method[:9] == "downgrade":
+                downgrades[int(attr.__doc__)] = attr
+
+        return downgrades
+
     def update_version(self, version):
         """
         Update database version
@@ -61,6 +77,10 @@ class DatabaseMigration(object):
         )
         self.cursor.execute("CREATE INDEX idx_roms on roms (rom ASC, description ASC, found ASC)")
 
+    def downgrade_create_roms(self):
+        """1"""
+        self.cursor.execute("DROP TABLE roms")
+
     def migration_create_metadata(self):
         """2"""
         self.cursor.execute(
@@ -78,3 +98,7 @@ class DatabaseMigration(object):
             "savestate VARCHAR(20) NULL"
             ")"
         )
+
+    def downgrade_create_metadata(self):
+        """2"""
+        self.cursor.execute("DROP TABLE metadata")

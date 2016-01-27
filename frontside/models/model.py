@@ -199,3 +199,15 @@ class Model(object):
         for unwanted_key in unwanted:
             del fields[unwanted_key]
         return fields
+
+    def fast_on(self):
+        self.cursor.execute('PRAGMA synchronous=OFF')
+        self.cursor.execute('PRAGMA count_changes=OFF')
+        self.cursor.execute('PRAGMA journal_mode=MEMORY')
+        self.cursor.execute('PRAGMA temp_store=MEMORY')
+
+    def fast_off(self):
+        self.cursor.execute('PRAGMA synchronous=ON')
+        self.cursor.execute('PRAGMA count_changes=ON')
+        self.cursor.execute('PRAGMA journal_mode=PERSIST')
+        self.cursor.execute('PRAGMA temp_store=DEFAULT')

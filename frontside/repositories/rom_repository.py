@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from ..models import Roms
 from ..models import Metadata
+import sys
+from time import sleep
+
 
 class RomRepository(object):
     def __init__(self, connection):
@@ -25,8 +28,20 @@ class RomRepository(object):
         :param rom_collection:
         :return:
         """
-        Metadata(self.__connection).truncate()
+        metadata = Metadata(self.__connection)
+        metadata.truncate()
+        metadata.fast_on()
+        counter = 0
         for rom in rom_collection:
-            Metadata(self.__connection).insert(rom).save(commit=False)
+            # percent = float(counter) / len(rom_collection) * 100
+            # done = ('#' * int(float(50) / 100 * percent)) + ('-' * 50)
+            # sys.stdout.write('\r|%s| (%.2f%%)' % (done[:50], percent))
+            # sys.stdout.flush()
+            #
+            # sleep(.000001)
+            #
+            # counter += 1
+            metadata.insert(rom).save(commit=False)
 
         self.__connection.commit()
+        metadata.fast_off()

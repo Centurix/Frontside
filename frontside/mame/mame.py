@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import subprocess
 import re
+import os
+
 from ..observable import Observable
 
 
@@ -11,12 +13,31 @@ class Mame(Observable):
         :param config: config object with the M.A.M.E. exec path and ROM path
         :return:
         """
-        self.mame = config['frontside']['mame_exec']
-        self.rom_path = config['frontside']['rom_path']
+        self.__mame = config['frontside']['mame_exec']
+        self.__rom_path = config['frontside']['rom_path']
         Observable.__init__(self)
 
+    def list_rom_names(self):
+        """
+        ROM names only, complete list
+        :return:
+        """
+        params = [self.__mame, '-rompath', self.__rom_path, '-listfull']
+        process = subprocess.Popen(params, stdout=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        roms = []
+        for line in stdout.split('\n'):
+            roms.append(line[:17].rstrip())
+        roms.pop(0)
+        return roms
+
     def list_full(self, rom_name=None):
-        params = [self.mame, '-rompath', self.rom_path, '-listfull']
+        """
+        ROM names and description as a dictionary
+        :param rom_name:
+        :return:
+        """
+        params = [self.__mame, '-rompath', self.__rom_path, '-listfull']
         if rom_name is not None:
             params.append(rom_name)
         process = subprocess.Popen(params, stdout=subprocess.PIPE)
@@ -31,7 +52,12 @@ class Mame(Observable):
         return roms
 
     def list_xml(self, rom_name=None):
-        params = [self.mame, '-rompath', self.rom_path, '-listxml']
+        """
+        Detailed ROM metadata in dictionary format
+        :param rom_name:
+        :return:
+        """
+        params = [self.__mame, '-rompath', self.__rom_path, '-listxml']
         total_roms = self.rom_count()
         if rom_name is not None:
             params.append(rom_name)
@@ -62,19 +88,47 @@ class Mame(Observable):
         return roms
 
     def play(self, rom_name):
-        process = subprocess.Popen([self.mame, '-rompath', self.rom_path, rom_name], stdout=subprocess.PIPE)
+        """
+        Play a ROM
+        :param rom_name:
+        :return:
+        """
+        process = subprocess.Popen([self.__mame, '-rompath', self.__rom_path, rom_name], stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         return stdout
 
     def version(self):
-        process = subprocess.Popen([self.mame, '-?'], stdout=subprocess.PIPE)
+        """
+        Retrieve MAME version
+        :return:
+        """
+        process = subprocess.Popen([self.__mame, '-?'], stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         results = re.search('v0.(\d{3}) ', stdout.splitlines()[0])
 
         return int(results.group(1))
 
     def rom_count(self):
-        params = [self.mame, '-rompath', self.rom_path, '-listfull']
+        """
+        Return the total ROM count
+        :return:
+        """
+        params = [self.__mame, '-rompath', self.__rom_path, '-listfull']
         process = subprocess.Popen(params, stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         return len(stdout.split('\n')) - 1
+
+    def list_rom_files(self):
+        """
+        Return a list of the ROM files in the MAME rom directory
+        :return:
+        """
+        rom_files = os.listdir(self.__rom_path)
+        valid_roms = []
+        for rom_file in rom_files:
+            if rom_file.endswith('.7z'):
+                valid_roms.append(rom_file[:-3])
+            elif rom_file.endswith('.zip'):
+                valid_roms.append(rom_file[:-4])
+
+        return set.intersection(set(valid_roms), set(self.list_rom_names()))
