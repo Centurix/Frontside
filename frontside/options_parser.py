@@ -61,6 +61,13 @@ class OptionsParser(object):
             default='default'
         )
         parser.add_argument(
+            '-p',
+            '--profile',
+            dest='profile',
+            help='User profile selection',
+            default=''
+        )
+        parser.add_argument(
             '-v',
             '--version',
             help='Show the version number',

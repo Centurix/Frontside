@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from controls import Button
+from controls import Container
 
 
 class Theme(object):
@@ -39,6 +40,11 @@ class Screen(object):
                     position=(control['left'], control['top'])
                 ))
                 focus = False
+            elif control['type'] == 'container':
+                self.controls.append(Container(
+                    dimensions=(control['width'], control['height']),
+                    position=(control['left'], control['top'])
+                ))
 
     def render(self, canvas):
         for control in self.controls:

@@ -70,10 +70,11 @@ class DatabaseMigration(object):
     def migration_create_roms(self):
         """1"""
         self.cursor.execute(
-            "CREATE TABLE roms "
-            "(rom VARCHAR(14) NOT NULL, "
+            "CREATE TABLE roms ("
+            "rom VARCHAR(14) NOT NULL, "
             "description VARCHAR(150) NULL, "
-            "found INT NOT NULL DEFAULT(0))"
+            "found INT NOT NULL DEFAULT(0)"
+            ")"
         )
         self.cursor.execute("CREATE INDEX idx_roms on roms (rom ASC, description ASC, found ASC)")
 
@@ -102,3 +103,16 @@ class DatabaseMigration(object):
     def downgrade_create_metadata(self):
         """2"""
         self.cursor.execute("DROP TABLE metadata")
+
+    def migration_create_profiles(self):
+        """3"""
+        self.cursor.execute(
+            "CREATE TABLE profiles ("
+            "name VARCHAR(32) NOT NULL,"
+            "avatar VARCHAR(256) NULL"
+            ")"
+        )
+
+    def downgrade_create_profiles(self):
+        """3"""
+        self.cursor.execute("DROP TABLE profiles")

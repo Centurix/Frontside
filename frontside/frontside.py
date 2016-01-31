@@ -10,6 +10,7 @@ from scanner import Scanner
 import sys
 import time
 from repositories import RomRepository
+from repositories import ProfileRepository
 
 """
 How do we manage the ROM list generation?
@@ -43,39 +44,39 @@ class Frontside(object):
 
         """
         At this point we need to read the definition of the screen for the UI elements from a file somewhere
-
         """
 
         clock = pygame.time.Clock()
         complete = False
 
-        """
-        The event loop needs to run with a bunch of observers in terms of buttons and other widgets
-        +-------------------------------------------------------------------------------------+
-        |                                                                                     |
-        |      +--------------------------------------------+  +-------------------------+    |
-        |      |                                            |  |                         |    |
-        |      | GAME LIST                                  |  |  ROM DETAILS            |    |
-        |      |                                            |  |                         |    |
-        |      |  UP/DOWN                                   |  |  VIDEO ETC              |    |
-        |      |                                            |  |                         |    |
-        |      |                                            |  |                         |    |
-        |  ^   |                                            |  |                         |    |
-        |  |   |                                            |  |                         |    |
-        |  S   |                                            |  |                         |    |
-        |  W   +--------------------------------------------+  |                         |    |
-        |  A   PAGE: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16    |                         |    |
-        |  P         LEFT/RIGHT                                |                         |    |
-        |  |                                                   |                         |    |
-        |  V   +--------+  +--------+  +--------+  +--------+  |                         |    |
-        |      | FAVES  |  | ALL    |  | LIST 1 |  | PREFS  |  |                         |    |
-        |      +--------+  +--------+  +--------+  +--------+  +-------------------------+    |
-        |            LEFT/RIGHT                                                               |
-        +-------------------------------------------------------------------------------------+
-
-        Need to make a list of controls, and how they interact with the joystick/keyboard
-        """
         theme = Theme(self.__config['frontside']['theme'])
+
+        """
+        Are there any profiles? Have we selected a profile in the config?
+        """
+        profiles = ProfileRepository(connection)
+        profiles.seed_profiles()
+        if len(profiles.get_all_profiles()) > 0 and self.__config['frontside']['profile'] == '':
+            """
+            Show the profile selector
+            """
+            profile_selection = theme['profile_selection']
+            profile_selection.render(screen)
+            pygame.display.flip()
+            while not complete:
+                clock.tick(60)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        complete = True
+                    elif event.type == pygame.KEYDOWN:
+                        if (event.key == pygame.K_w and event.mod & pygame.KMOD_CTRL) or \
+                           (event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT):
+                            complete = True
+                    profile_selection.process_event(event)
+
+                profile_selection.render(screen)
+                pygame.display.flip()
+
         main = theme['main']
 
         while not complete:
