@@ -2,6 +2,8 @@
 import sqlite3
 from database import DatabaseMigration
 import pygame
+from controls import Button
+from theme import Theme
 
 from mame import Mame
 from scanner import Scanner
@@ -37,9 +39,12 @@ class Frontside(object):
         pygame.init()
         width = self.__config['frontside']['width']
         height = self.__config['frontside']['height']
-        print 'Width: %d Height: %d' % (width, height)
         screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF)
-        pygame.display.flip()
+
+        """
+        At this point we need to read the definition of the screen for the UI elements from a file somewhere
+
+        """
 
         clock = pygame.time.Clock()
         complete = False
@@ -70,7 +75,8 @@ class Frontside(object):
 
         Need to make a list of controls, and how they interact with the joystick/keyboard
         """
-
+        theme = Theme(self.__config['frontside']['theme'])
+        main = theme['main']
 
         while not complete:
             clock.tick(60)
@@ -81,6 +87,9 @@ class Frontside(object):
                     if (event.key == pygame.K_w and event.mod & pygame.KMOD_CTRL) or \
                        (event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT):
                         complete = True
+                main.process_event(event)
+
+            main.render(screen)
             pygame.display.flip()
 
         # mame = Mame(self.__config)

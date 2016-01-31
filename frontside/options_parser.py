@@ -54,6 +54,13 @@ class OptionsParser(object):
             default='./frontside.db'
         )
         parser.add_argument(
+            '-t',
+            '--theme',
+            dest='theme',
+            help='Interface theme',
+            default='default'
+        )
+        parser.add_argument(
             '-v',
             '--version',
             help='Show the version number',
