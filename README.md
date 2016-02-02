@@ -9,7 +9,7 @@ You'll need pygame, sqlite, Python > 2.6 and maybe some other stuff, haven't col
 Oh, and a copy of MAME somewhere. Default config file is frontside.ini.
 
 It does bootstrap, there are command line and config options, there is a database. These are as follows:
-
+```
 usage: frontside.py [-h] [-l LOG_FILE]
                     [-L {debug,info,warning,critical,error}] [-C CONFIG_FILE]
                     [-d DATABASE_PATH] [-t THEME] [-p PROFILE] [-v]
@@ -31,3 +31,4 @@ optional arguments:
   -p PROFILE, --profile PROFILE
                         User profile selection
   -v, --version         Show the version number
+```
