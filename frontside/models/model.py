@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from abc import ABCMeta
+import abc
 
 
 class Model(object):
     """
     Abstract class for a basic model, make sure __init__ is called
     """
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, connection):
         self.table = ""

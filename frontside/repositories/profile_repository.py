@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from ..models import Profiles
+from repository import Repository
 
 
-class ProfileRepository(object):
+class ProfileRepository(Repository):
     def __init__(self, connection):
+        super(self.__class__, self).__init__(connection)
         self.__connection = connection
 
     def get_all_profiles(self):

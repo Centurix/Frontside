@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from abc import ABCMeta
+import abc
 
 
 class Observable(object):
     """
     Abstract class for observers
     """
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self):
         self.__observers = []

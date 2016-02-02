@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 from database import DatabaseMigration
-import pygame
-from controls import Button
-from theme import Theme
+# import pygame
+# from theme import Theme
+from screens import AllGames
 
-from mame import Mame
-from scanner import Scanner
-import sys
-import time
-from repositories import RomRepository
+# from mame import Mame
+# from scanner import Scanner
+# import sys
+# import time
+# from repositories import RomRepository
 from repositories import ProfileRepository
 
 """
@@ -22,7 +22,7 @@ class Frontside(object):
     The main Frontside application
     """
     def __init__(self, config):
-        self.__config = config
+        self._config = config
 
     def start(self):
         """
@@ -33,73 +33,92 @@ class Frontside(object):
 
         # Connect and migrate where necessary, would be nice for a database object that has a connection
         # and the ability to migrate the database automatically where needed.
-        connection = sqlite3.connect(self.__config['frontside']['database_path'])
+        connection = sqlite3.connect(self._config['frontside']['database_path'])
         DatabaseMigration(connection)
-
-        # Open a window
-        pygame.init()
-        width = self.__config['frontside']['width']
-        height = self.__config['frontside']['height']
-        screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF)
 
         """
         At this point we need to read the definition of the screen for the UI elements from a file somewhere
-        """
 
-        clock = pygame.time.Clock()
-        complete = False
+        Screen management
+        =================
 
-        theme = Theme(self.__config['frontside']['theme'])
+        We want several types of screens
 
-        """
+        1. Full screen layout with event processing, several exit points
+        2. Full screen layout with event processing, a single exit point returning packaged data
+        3. Smaller overlay screen with event processing, like a modal, a single exit point returning packaged data
+
+        Each thing covers the events and display
+
+        +-------+  +--------------+  +-------------------------+  +-------------+
+        | Entry |->| Blank Screen |->| Profile selection modal |->| Main screen |
+        +-------+  +--------------+  +-------------------------+  +-------------+
+
+        Invoke display plus process events
+
+        main_screen.show(canvas)
+
+        Within the main_screen, show the transparent overlay selection
+
+        if button_clicked:
+            profile_selection.show(canvas)
+
         Are there any profiles? Have we selected a profile in the config?
         """
         profiles = ProfileRepository(connection)
         profiles.seed_profiles()
-        if len(profiles.get_all_profiles()) > 0 and self.__config['frontside']['profile'] == '':
-            """
-            Show the profile selector
-            """
-            profile_selection = theme['profile_selection']
-            profile_selection.render(screen)
-            pygame.display.flip()
-            while not complete:
-                clock.tick(60)
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        complete = True
-                    elif event.type == pygame.KEYDOWN:
-                        if (event.key == pygame.K_w and event.mod & pygame.KMOD_CTRL) or \
-                           (event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT):
-                            complete = True
-                    profile_selection.process_event(event)
 
-                profile_selection.render(screen)
-                pygame.display.flip()
+        AllGames(self._config).show()
 
-        main = theme['main']
+        # if len(profiles.get_all_profiles()) > 0 and self._config['frontside']['profile'] == '':
+        #     """
+        #     Show the profile selector
+        #
+        #     Ideally we'd like to get values from a screen in a prompt style situation. We either return values or we cancel.
+        #
+        #     """
+        #     profile = thing.prompt(layout)
+        #
+        #     profile_selection = theme['profile_selection']
+        #     profile_selection.render(screen)
+        #     pygame.display.flip()
+        #     while not complete:
+        #         clock.tick(60)
+        #         for event in pygame.event.get():
+        #             if event.type == pygame.QUIT:
+        #                 complete = True
+        #             elif event.type == pygame.KEYDOWN:
+        #                 if (event.key == pygame.K_w and event.mod & pygame.KMOD_CTRL) or \
+        #                    (event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT):
+        #                     complete = True
+        #             profile_selection.process_event(event)
+        #
+        #         profile_selection.render(screen)
+        #         pygame.display.flip()
+        #
+        # main = theme['main']
+        #
+        # while not complete:
+        #     clock.tick(60)
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             complete = True
+        #         elif event.type == pygame.KEYDOWN:
+        #             if (event.key == pygame.K_w and event.mod & pygame.KMOD_CTRL) or \
+        #                (event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT):
+        #                 complete = True
+        #         main.process_event(event)
+        #
+        #     main.render(screen)
+        #     pygame.display.flip()
 
-        while not complete:
-            clock.tick(60)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    complete = True
-                elif event.type == pygame.KEYDOWN:
-                    if (event.key == pygame.K_w and event.mod & pygame.KMOD_CTRL) or \
-                       (event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT):
-                        complete = True
-                main.process_event(event)
-
-            main.render(screen)
-            pygame.display.flip()
-
-        # mame = Mame(self.__config)
+        # mame = Mame(self._config)
         # mame.register_observer(self)
         # roms = mame.list_xml()
         # repository = RomRepository(connection)
         # repository.add_rom_details_from_array(roms)
         # mame.play('pengo')
-        # scanner = Scanner(self.__config)
+        # scanner = Scanner(self._config)
         # scanner.register_observer(self)
         # scanner.start()
 
