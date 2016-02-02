@@ -2,8 +2,10 @@
 import abc
 import pygame
 from ..theme import Theme
-from ..controls import Button
-from ..controls import Container
+from ..factories import Control
+# from ..controls import Button
+# from ..controls import Container
+# from ..controls import List
 
 
 class Screen(object):
@@ -34,23 +36,41 @@ class Screen(object):
 
         focus = True
         for control in theme[self._screen_def]['controls']:
-            if control['type'] == 'button':
-                self._controls.append(Button({
+            self._controls.append(
+                Control.factory(control['type'], {
                     'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
-                    'background_color': (128, 128, 128),
-                    'foreground_color': (0, 0, 0),
-                    'text': control['text'],
-                    'focused': focus,
-                    'position': (control['left'] * column_pixels, control['top'] * row_pixels),
-                    'key': control['key'],
-                    'key_up': control['key_up']
-                }))
-                focus = False
-            elif control['type'] == 'container':
-                self._controls.append(Container({
-                    'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
-                    'position': (control['left'] * column_pixels, control['top'] * row_pixels)
-                }))
+                    'position': (control['left'] * column_pixels, control['top'] * row_pixels)  # ,
+                    # 'background_color': (128, 128, 128),
+                    # 'foreground_color': (0, 0, 0),
+                    # 'text': control['text'] if control['text'] else '',
+                    # 'focused': focus,
+                    # 'key': control['key'],
+                    # 'key_up': control['key_up']
+                })
+            )
+
+            # if control['type'] == 'button':
+            #     self._controls.append(Button({
+            #         'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
+            #         'background_color': (128, 128, 128),
+            #         'foreground_color': (0, 0, 0),
+            #         'text': control['text'],
+            #         'focused': focus,
+            #         'position': (control['left'] * column_pixels, control['top'] * row_pixels),
+            #         'key': control['key'],
+            #         'key_up': control['key_up']
+            #     }))
+            #     focus = False
+            # elif control['type'] == 'container':
+            #     self._controls.append(Container({
+            #         'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
+            #         'position': (control['left'] * column_pixels, control['top'] * row_pixels)
+            #     }))
+            # elif control['type'] == 'list':
+            #     self._controls.append(List({
+            #         'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
+            #         'position': (control['left'] * column_pixels, control['top'] * row_pixels)
+            #     }))
 
     def show(self):
         """

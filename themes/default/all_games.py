@@ -8,7 +8,7 @@ all_games = {
             'name': 'start_game',
             'width': 2,
             'height': 1,
-            'top': 1,
+            'top': 9,
             'left': 1,
             'text': 'Start',
             'key': pygame.K_a,
@@ -18,7 +18,7 @@ all_games = {
             'name': 'settings',
             'width': 2,
             'height': 1,
-            'top': 1,
+            'top': 9,
             'left': 4,
             'text': 'Settings',
             'key': pygame.K_b,
@@ -26,16 +26,17 @@ all_games = {
         }, {
             'type': 'list',
             'name': 'gamelist',
-            'width': 6,
-            'height': 6,
-            'top': 3,
-            'left': 0
+            'width': 9,
+            'height': 7,
+            'top': 1,
+            'left': 1,
+            'data_source': 'game_list'
         }, {
             'type': 'container',
             'name': 'button_group',
             'width': 10,
             'height': 1,
-            'top': 5,
+            'top': 11,
             'left': 1,
             'controls': [{
                 'type': 'button',
