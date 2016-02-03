@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from control import Control
+from ..screens.scaler import Scaler
 import pygame
 
 
@@ -12,8 +13,13 @@ class Button(Control):
     def down(self):
         return 'down'
 
+    @property
+    def disabled(self):
+        return 'disabled'
+
     def __init__(self, options):
         default = {
+            'theme': 'default',
             'dimensions': (2, 1),
             'background_color': (128, 128, 128),
             'foreground_color': (0, 0, 0),
@@ -33,29 +39,35 @@ class Button(Control):
                 'down': {
                     'background_color': (255, 0, 0),
                     'foreground_color': (255, 255, 255)
+                },
+                'disabled': {
+                    'background-color': (0, 0, 0),
+                    'foreground-color': (80, 80, 80)
                 }
             }
         }
-        self._options = dict(default.items() + options.items())
         self._state = self.up
-        super(self.__class__, self).__init__(self._options['focused'])
+        super(self.__class__, self).__init__(default, options)
 
-    def draw(self, canvas):
+    def draw(self, canvas, screen_info):
         """
         * Can create an image based on a template or spritesheet
         * Is either a momentary button or a click down/up button
 
         :param canvas:
+        :param screen_info:
         :return:
         """
-        surface = pygame.Surface(self._options['dimensions'])
+        scaler = Scaler(screen_info)
+
+        surface = pygame.Surface(scaler.scale(self._options['dimensions']))
         surface.fill(self._options['states'][self._state]['background_color'])
 
         font = pygame.font.Font(None, 18)
         text = font.render(self._options['text'], 1, self._options['states'][self._state]['foreground_color'])
         surface.blit(text, (0, 0))
 
-        canvas.blit(surface, self._options['position'])
+        canvas.blit(surface, scaler.scale(self._options['position']))
 
     def process_event(self, event):
         # if not self.focused:

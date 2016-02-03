@@ -3,9 +3,6 @@ import abc
 import pygame
 from ..theme import Theme
 from ..factories import Control
-# from ..controls import Button
-# from ..controls import Container
-# from ..controls import List
 
 
 class Screen(object):
@@ -14,77 +11,44 @@ class Screen(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, config):
-        self._config = config
-        self._screen_def = 'blank'
-        self._controls = []
-        self._columns = 12
-        self._rows = 12
+    _screen_def = 'blank'
 
-    def build_controls(self, screen_width, screen_height):
+    def __init__(self, config):
+        self._controls = []
+        self._config = config
+        self._theme = Theme(self._config['frontside']['theme'])
+
+        width = self._config['frontside']['width']
+        height = self._config['frontside']['height']
+
+        columns = self._theme[self._screen_def]['columns']
+        rows = self._theme[self._screen_def]['rows']
+
+        self._screen_info = {
+            'pixels_per_column': int(float(width) / columns),
+            'pixels_per_row': int(float(height) / rows)
+        }
+
+    def build_controls(self):
         """
         Build the screen controls from the theme
         :return:
         """
-        theme = Theme(self._config['frontside']['theme'])
-
-        self._columns = theme[self._screen_def]['columns']
-        self._rows = theme[self._screen_def]['rows']
-
-        column_pixels = int(float(screen_width) / self._columns)
-        row_pixels = int(float(screen_height) / self._rows)
-
         focus = True
-        for control in theme[self._screen_def]['controls']:
-            self._controls.append(
-                Control.factory(control['type'], {
-                    'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
-                    'position': (control['left'] * column_pixels, control['top'] * row_pixels)  # ,
-                    # 'background_color': (128, 128, 128),
-                    # 'foreground_color': (0, 0, 0),
-                    # 'text': control['text'] if control['text'] else '',
-                    # 'focused': focus,
-                    # 'key': control['key'],
-                    # 'key_up': control['key_up']
-                })
-            )
-
-            # if control['type'] == 'button':
-            #     self._controls.append(Button({
-            #         'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
-            #         'background_color': (128, 128, 128),
-            #         'foreground_color': (0, 0, 0),
-            #         'text': control['text'],
-            #         'focused': focus,
-            #         'position': (control['left'] * column_pixels, control['top'] * row_pixels),
-            #         'key': control['key'],
-            #         'key_up': control['key_up']
-            #     }))
-            #     focus = False
-            # elif control['type'] == 'container':
-            #     self._controls.append(Container({
-            #         'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
-            #         'position': (control['left'] * column_pixels, control['top'] * row_pixels)
-            #     }))
-            # elif control['type'] == 'list':
-            #     self._controls.append(List({
-            #         'dimensions': (control['width'] * column_pixels, control['height'] * row_pixels),
-            #         'position': (control['left'] * column_pixels, control['top'] * row_pixels)
-            #     }))
+        for control in self._theme[self._screen_def]['controls']:
+            control['focused'] = focus
+            focus = False
+            self._controls.append(Control.factory(control['type'], control))
 
     def show(self):
         """
         Do we do pygame.init() for every screen?
         :return:
         """
-
-        width = self._config['frontside']['width']
-        height = self._config['frontside']['height']
-
-        self.build_controls(width, height)
+        self.build_controls()
 
         pygame.init()
-        screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF)
+        screen = pygame.display.set_mode((self._config['frontside']['width'], self._config['frontside']['height']), pygame.DOUBLEBUF)
 
         clock = pygame.time.Clock()
         complete = False
@@ -117,6 +81,8 @@ class Screen(object):
             self.render(screen)
             pygame.display.flip()
 
+        screen.fill((0, 0, 0))
+
     def render(self, canvas):
         for control in self._controls:
-            control.draw(canvas)
+            control.draw(canvas, self._screen_info)
