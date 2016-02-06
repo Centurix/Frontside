@@ -20,6 +20,7 @@ class Button(Control):
     def __init__(self, options):
         default = {
             'theme': 'default',
+            'focused': False,
             'dimensions': (2, 1),
             'background_color': (128, 128, 128),
             'foreground_color': (0, 0, 0),
@@ -64,8 +65,11 @@ class Button(Control):
         surface.fill(self._options['states'][self._state]['background_color'])
 
         font = pygame.font.Font(None, 18)
-        text = font.render(self._options['text'], 1, self._options['states'][self._state]['foreground_color'])
-        surface.blit(text, (0, 0))
+        text = font.render(self._options['text'], True, self._options['states'][self._state]['foreground_color'])
+        text_rect = text.get_rect()
+        text_rect.centerx = surface.get_rect().centerx
+        text_rect.centery = surface.get_rect().centery
+        surface.blit(text, text_rect)
 
         canvas.blit(surface, scaler.scale(self._options['position']))
 

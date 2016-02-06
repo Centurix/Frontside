@@ -32,7 +32,8 @@ all_games = {
             'name': 'gamelist',
             'dimensions': (10, 7),
             'position': (1, 1),
-            'data_source': 'game_list'
+            'data_source': 'game_list',
+            'focused': True
         }, {
             'type': 'container',
             'name': 'button_group',

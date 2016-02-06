@@ -5,10 +5,14 @@ import pygame
 
 
 class List(Control):
+    """
+    This needs to have a data source and also react to up/down/left/right
+    """
     def __init__(self, options):
         default = {
             'dimensions': (100, 100),
-            'position': (1, 1)
+            'position': (1, 1),
+            'focused': False
         }
         super(self.__class__, self).__init__(default, options)
 
@@ -22,5 +26,19 @@ class List(Control):
     def process_event(self, event):
         if not self.focused:
             return False, '', {}
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP:
+                print "UP"
+                return True, '', {}
+            elif event.key == pygame.K_DOWN:
+                print "DOWN"
+                return True, '', {}
+            elif event.key == pygame.K_LEFT:
+                print "LEFT"
+                return True, '', {}
+            elif event.key == pygame.K_RIGHT:
+                print "RIGHT"
+                return True, '', {}
 
         return False, '', {}

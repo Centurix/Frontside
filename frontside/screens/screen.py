@@ -34,10 +34,7 @@ class Screen(object):
         Build the screen controls from the theme
         :return:
         """
-        focus = True
         for control in self._theme[self._screen_def]['controls']:
-            control['focused'] = focus
-            focus = False
             self._controls.append(Control.factory(control['type'], control))
 
     def show(self):
