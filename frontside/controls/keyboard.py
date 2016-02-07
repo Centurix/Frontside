@@ -4,19 +4,16 @@ from ..screens.scaler import Scaler
 import pygame
 
 
-class Button(Control):
-    @property
-    def up(self):
-        return 'up'
-
-    @property
-    def down(self):
-        return 'down'
-
-    @property
-    def disabled(self):
-        return 'disabled'
-
+class Keyboard(Control):
+    """
+        Draw any existing text
+        Pop open an on screen keyboard where needed
+        1 2 3 4 5 6 7 8 9 0
+        Q W E R T Y U I O P
+        A S D F G H J K L
+        ^ Z X C V B N M
+              SPACE
+    """
     def __init__(self, options):
         default = {
             'theme': 'default',

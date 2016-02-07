@@ -22,10 +22,17 @@ settings = {
             'key_up': 'redefine_keys'
         },
         {
+            'type': 'label',
+            'name': 'rom_path_label',
+            'dimensions': (2, 1),
+            'position': (1, 3),
+            'text': 'ROM Path:'
+        },
+        {
             'type': 'text',
             'name': 'rom_path',
             'dimensions': (3, 1),
-            'position': (1, 3),
+            'position': (4, 3),
             'key': pygame.K_c
         }
     ]
