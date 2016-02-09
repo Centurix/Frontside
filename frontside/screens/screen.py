@@ -13,9 +13,10 @@ class Screen(object):
 
     _screen_def = 'blank'
 
-    def __init__(self, config):
+    def __init__(self, config, connection):
         self._controls = []
         self._config = config
+        self._connection = connection
         self._theme = Theme(self._config['frontside']['theme'])
 
         width = self._config['frontside']['width']
@@ -29,6 +30,8 @@ class Screen(object):
             'pixels_per_row': int(float(height) / rows)
         }
 
+        self.build_controls()
+
     def build_controls(self):
         """
         Build the screen controls from the theme
@@ -37,12 +40,16 @@ class Screen(object):
         for control in self._theme[self._screen_def]['controls']:
             self._controls.append(Control.factory(control['type'], control))
 
+    def find_control(self, control_name):
+        for control in self._controls:
+            if control.name == control_name:
+                return control
+
     def show(self):
         """
         Do we do pygame.init() for every screen?
         :return:
         """
-        self.build_controls()
 
         pygame.init()
         screen = pygame.display.set_mode((self._config['frontside']['width'], self._config['frontside']['height']), pygame.DOUBLEBUF)

@@ -89,6 +89,13 @@ class Model(object):
 
         return self
 
+    def get_count(self):
+        """
+        Get a count of records in this transaction
+        :return:
+        """
+        return self.cursor.execute(self.build_count_query()).fetchall()[0][0]
+
     def get_all(self):
         """
         Retrieve all rows for the query
@@ -166,6 +173,12 @@ class Model(object):
             self._connection.commit()
 
         return self
+
+    def build_count_query(self):
+        return "SELECT COUNT(*) as `record_count` FROM %s %s" % (
+            self.table,
+            self.get_predicates()
+        )
 
     def build_select_query(self):
         return "SELECT %s FROM %s %s %s %s" % (

@@ -15,6 +15,10 @@ class Control(object):
     def focused(self):
         return self._options['focused']
 
+    @property
+    def name(self):
+        return self._options['name']
+
     @abc.abstractmethod
     def draw(self, canvas, screen_info):
         pass

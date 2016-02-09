@@ -9,7 +9,7 @@ from repository import Repository
 class RomRepository(Repository):
     def __init__(self, connection):
         super(self.__class__, self).__init__(connection)
-        self.__connection = connection
+        self._connection = connection
 
     def add_rom_name_and_description_from_array(self, rom_collection):
         """
@@ -18,11 +18,11 @@ class RomRepository(Repository):
         :param rom_collection:
         :return:
         """
-        Roms(self.__connection).truncate()
+        Roms(self._connection).truncate()
         for rom in rom_collection:
-            Roms(self.__connection).insert(rom).save(commit=False)
+            Roms(self._connection).insert(rom).save(commit=False)
 
-        self.__connection.commit()
+        self._connection.commit()
 
     def add_rom_details_from_array(self, rom_collection):
         """
@@ -30,7 +30,7 @@ class RomRepository(Repository):
         :param rom_collection:
         :return:
         """
-        metadata = Metadata(self.__connection)
+        metadata = Metadata(self._connection)
         metadata.truncate()
         metadata.fast_on()
         counter = 0
@@ -45,5 +45,32 @@ class RomRepository(Repository):
             # counter += 1
             metadata.insert(rom).save(commit=False)
 
-        self.__connection.commit()
+        self._connection.commit()
         metadata.fast_off()
+
+    def list_roms(self):
+        """
+        Provide a list of ROMs via a filter
+        :param filter:
+        :return:
+        """
+        return Roms(self._connection).select(['rom', 'description']).get_all()
+
+    def get_rom_page(self, page, page_size):
+        """
+        Return a page from the ROM table
+        :param page:
+        :param page_size:
+        :return:
+        """
+        return Roms(self._connection).select(['rom', 'description']).page_size(page_size).page_offset(page).get_all()
+
+    def get_rom_page_count(self, page, page_size):
+        """
+        Return the total page count of ROMs
+        :param page:
+        :param page_size:
+        :return:
+        """
+        total_roms = Roms(self._connection).page_size(page_size).page_offset(page).get_count()
+        return int(float(total_roms) / page_size)

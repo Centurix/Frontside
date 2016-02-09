@@ -68,7 +68,7 @@ class Frontside(object):
         profiles = ProfileRepository(connection)
         profiles.seed_profiles()
 
-        AllGames(self._config).show()
+        AllGames(self._config, connection).show()
 
         # if len(profiles.get_all_profiles()) > 0 and self._config['frontside']['profile'] == '':
         #     """
