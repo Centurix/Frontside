@@ -8,7 +8,8 @@ You'll need pygame, sqlite, Python > 2.6 and maybe some other stuff, haven't col
 
 Oh, and a copy of MAME somewhere. Default config file is frontside.ini.
 
-It does bootstrap, there are command line and config options, there is a database. These are as follows:
+It does bootstrap, there are command line and config options, there is a database. Some UI elements appearing, yay!
+
 ```
 usage: frontside.py [-h] [-l LOG_FILE]
                     [-L {debug,info,warning,critical,error}] [-C CONFIG_FILE]
