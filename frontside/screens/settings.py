@@ -10,6 +10,8 @@ class Settings(Screen):
 
     def start_scanner(self, params):
         print "Starting the scanner"
+        # TODO: Start the scanner thread
 
     def redefine_keys(self, params):
         print "Redefining the keys"
+        # TODO: Redefine some key

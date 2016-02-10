@@ -34,6 +34,14 @@ settings = {
             'dimensions': (3, 1),
             'position': (4, 3),
             'key': pygame.K_c
+        },
+        {
+            'type': 'button',
+            'name': 'rom_maintenance',
+            'dimensions': (2, 1),
+            'position': (1, 5),
+            'key': pygame.K_d,
+            'text': 'ROM Maintenance'
         }
     ]
 }

@@ -16,7 +16,7 @@ class List(Control):
             'focused': False,
             'background_color': (0, 0, 0),
             'foreground_color': (0, 0, 0),
-            'font_size': 18
+            'lines': 10
         }
         self._list = ListProvider(None)
         self._position = 0
@@ -27,24 +27,28 @@ class List(Control):
         surface = pygame.Surface(scaler.scale(self._options['dimensions']))
         surface.fill((255, 255, 255))
 
-        font = pygame.font.Font(None, self._options['font_size'])
-
-        y_pos = 0
+        self._list.set_page_size(self._options['lines'])
 
         height = scaler.scale(self._options['dimensions'])[1]
-        self._list.set_page_size(int(float(height) / self._options['font_size']))
+        font_size = int(float(height) / self._options['lines'])
+        font = pygame.font.Font(None, font_size)
 
         # Get the list and draw it
         list_index = 0
-        for item in self._list.get_current_page():
+        current_page = self._list.get_current_page()
+
+        # Make sure the current cursor is within bounds
+        if self._position > len(current_page) - 1:
+            self._position = len(current_page) - 1
+
+        for item in current_page:
             if list_index == self._position:
                 text = font.render(item[1], True, (255, 0, 0))
             else:
                 text = font.render(item[1], True, self._options['foreground_color'])
             text_rect = text.get_rect()
             text_rect.centerx = surface.get_rect().centerx
-            text_rect.top = y_pos
-            y_pos += self._options['font_size']
+            text_rect.top = list_index * font_size
             surface.blit(text, text_rect)
             list_index += 1
 
@@ -52,8 +56,11 @@ class List(Control):
 
         canvas.blit(surface, scaler.scale(self._options['position']))
 
-    def set_list(self, list):
-        self._list = list
+    def set_list(self, list_provider):
+        self._list = list_provider
+
+    def get_list(self):
+        return self._list
 
     def next_page(self):
         self._list.next_page()
@@ -80,11 +87,14 @@ class List(Control):
                 if self._position < self._list.get_page_size() - 1:
                     self._position += 1
                 return True, '', {}
-            elif event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_PAGEUP:
                 self.previous_page()
                 return True, '', {}
-            elif event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_PAGEDOWN:
                 self.next_page()
                 return True, '', {}
 
         return False, '', {}
+
+    def get_selection(self):
+        return self._list.get_current_page()[self._position][0]

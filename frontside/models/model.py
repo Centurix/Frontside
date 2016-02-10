@@ -18,6 +18,7 @@ class Model(object):
         self._page_size = 0
         self._page_offset = 0
         self._connection = connection
+        self._debug = False
         self.cursor = self._connection.cursor()
 
     def truncate(self):
@@ -94,6 +95,9 @@ class Model(object):
         Get a count of records in this transaction
         :return:
         """
+        if self._debug:
+            print self.build_count_query()
+
         return self.cursor.execute(self.build_count_query()).fetchall()[0][0]
 
     def get_all(self):
@@ -101,12 +105,18 @@ class Model(object):
         Retrieve all rows for the query
         :return:
         """
+        if self._debug:
+            print self.build_select_query()
+
         return self.cursor.execute(self.build_select_query()).fetchall()
 
     def get(self):
         """
         Retrieve the first row only
         """
+        if self._debug:
+            print self.build_select_query()
+
         return self.cursor.execute(self.build_select_query()).fetchone()
 
     def get_selects(self):

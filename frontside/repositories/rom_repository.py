@@ -74,3 +74,24 @@ class RomRepository(Repository):
         """
         total_roms = Roms(self._connection).page_size(page_size).page_offset(page).get_count()
         return int(float(total_roms) / page_size)
+
+    def get_favourites_page(self, page, page_size):
+        """
+        Return a page from the ROM table
+        :param page:
+        :param page_size:
+        :return:
+        """
+        roms = Roms(self._connection)
+        roms._debug = True
+        return roms.select(['rom', 'description']).page_size(page_size).page_offset(page).order_by('rom desc').get_all()
+
+    def get_favourites_page_count(self, page, page_size):
+        """
+        Return the total page count of ROMs
+        :param page:
+        :param page_size:
+        :return:
+        """
+        total_roms = Roms(self._connection).page_size(page_size).page_offset(page).get_count()
+        return int(float(total_roms) / page_size)
