@@ -117,7 +117,6 @@ class Frontside(object):
         # roms = mame.list_xml()
         # repository = RomRepository(connection)
         # repository.add_rom_details_from_array(roms)
-        # mame.play('pengo')
         # scanner = Scanner(self._config)
         # scanner.register_observer(self)
         # scanner.start()

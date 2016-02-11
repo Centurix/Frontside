@@ -125,10 +125,15 @@ class Mame(Observable):
         """
         rom_files = os.listdir(self.__rom_path)
         valid_roms = []
+        rom_count = 0
         for rom_file in rom_files:
             if rom_file.endswith('.7z'):
                 valid_roms.append(rom_file[:-3])
             elif rom_file.endswith('.zip'):
                 valid_roms.append(rom_file[:-4])
+            self.notify_observers(rom_count, len(rom_files))
+            rom_count += 1
+
+        self.notify_observers(1, 1)
 
         return set.intersection(set(valid_roms), set(self.list_rom_names()))

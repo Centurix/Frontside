@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 from ..models import Roms
 from ..models import Metadata
-import sys
-from time import sleep
 from repository import Repository
+from ..observable import Observable
 
 
-class RomRepository(Repository):
+class RomRepository(Observable, Repository):
     def __init__(self, connection):
-        super(self.__class__, self).__init__(connection)
+        Repository.__init__(self, connection)
+        # super(self.__class__, self).__init__(connection)
         self._connection = connection
+        Observable.__init__(self)
 
     def add_rom_name_and_description_from_array(self, rom_collection):
         """
@@ -18,11 +19,19 @@ class RomRepository(Repository):
         :param rom_collection:
         :return:
         """
-        Roms(self._connection).truncate()
+        roms = Roms(self._connection)
+        roms.truncate()
+        roms.fast_on()
+        rom_count = 0
         for rom in rom_collection:
-            Roms(self._connection).insert(rom).save(commit=False)
+            roms.insert(rom).save(commit=False)
+            self.notify_observers(rom_count, len(rom_collection))
+            rom_count += 1
+
+        self.notify_observers(1, 1)
 
         self._connection.commit()
+        roms.fast_off()
 
     def add_rom_details_from_array(self, rom_collection):
         """
@@ -33,17 +42,13 @@ class RomRepository(Repository):
         metadata = Metadata(self._connection)
         metadata.truncate()
         metadata.fast_on()
-        counter = 0
+        rom_count = 0
         for rom in rom_collection:
-            # percent = float(counter) / len(rom_collection) * 100
-            # done = ('#' * int(float(50) / 100 * percent)) + ('-' * 50)
-            # sys.stdout.write('\r|%s| (%.2f%%)' % (done[:50], percent))
-            # sys.stdout.flush()
-            #
-            # sleep(.000001)
-            #
-            # counter += 1
             metadata.insert(rom).save(commit=False)
+            self.notify_observers(rom_count, len(rom_collection))
+            rom_count += 1
+
+        self.notify_observers(1, 1)
 
         self._connection.commit()
         metadata.fast_off()

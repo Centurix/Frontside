@@ -8,9 +8,9 @@ from observable import Observable
 
 class Scanner(Observable, threading.Thread):
     def __init__(self, config):
-        self.__config = config
-        self.__mame = None
-        self.__connection = None
+        self._config = config
+        self._mame = None
+        self._connection = None
         Observable.__init__(self)
         threading.Thread.__init__(self)
 
@@ -27,12 +27,21 @@ class Scanner(Observable, threading.Thread):
         :return:
         """
         print 'Starting the thread'
-        self.__mame = Mame(self.__config)
-        self.__connection = sqlite3.connect(self.__config['frontside']['database_path'])
+        self._mame = Mame(self._config)
+        self._connection = sqlite3.connect(self._config['frontside']['database_path'])
 
-        found_roms = self.__mame.list_rom_files()
+        found_roms = self._mame.list_rom_files()
         for rom in found_roms:
-            print self.__mame.list_xml(rom)
+            print self._mame.list_xml(rom)
+
+        self._mame.register_observer(self)
+        print self._mame.list_xml()
+        # roms = mame.list_full()
+        # roms = mame.list_xml()
+        # repository = RomRepository(self._connection)
+        # repository.register_observer(self)
+        # repository.add_rom_name_and_description_from_array(roms)
+        # repository.add_rom_details_from_array(roms)
 
         # for rom in mame_roms:
         #     print rom
