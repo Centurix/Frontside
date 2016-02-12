@@ -13,22 +13,33 @@ class Mame(Observable):
         :param config: config object with the M.A.M.E. exec path and ROM path
         :return:
         """
-        self.__mame = config['frontside']['mame_exec']
-        self.__rom_path = config['frontside']['rom_path']
+        self._mame = config['frontside']['mame_exec']
+        self._rom_path = config['frontside']['rom_path']
+        self._running = False
         Observable.__init__(self)
+
+    def halt(self):
+        self._running = False
+
+    def get_status(self):
+        return self._running
 
     def list_rom_names(self):
         """
         ROM names only, complete list
         :return:
         """
-        params = [self.__mame, '-rompath', self.__rom_path, '-listfull']
+        self._running = True
+        params = [self._mame, '-rompath', self._rom_path, '-listfull']
         process = subprocess.Popen(params, stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         roms = []
         for line in stdout.split('\n'):
             roms.append(line[:17].rstrip())
+            if not self._running:
+                break
         roms.pop(0)
+        self._running = False
         return roms
 
     def list_full(self, rom_name=None):
@@ -37,7 +48,8 @@ class Mame(Observable):
         :param rom_name:
         :return:
         """
-        params = [self.__mame, '-rompath', self.__rom_path, '-listfull']
+        self._running = True
+        params = [self._mame, '-rompath', self._rom_path, '-listfull']
         if rom_name is not None:
             params.append(rom_name)
         process = subprocess.Popen(params, stdout=subprocess.PIPE)
@@ -48,7 +60,10 @@ class Mame(Observable):
                 "rom": line[:17].rstrip(),
                 "description": line[18:].replace('"', '')
             })
+            if not self._running:
+                break
         roms.pop(0)
+        self._running = False
         return roms
 
     def list_xml(self, rom_name=None):
@@ -57,7 +72,8 @@ class Mame(Observable):
         :param rom_name:
         :return:
         """
-        params = [self.__mame, '-rompath', self.__rom_path, '-listxml']
+        self._running = True
+        params = [self._mame, '-rompath', self._rom_path, '-listxml']
         total_roms = self.rom_count()
         if rom_name is not None:
             params.append(rom_name)
@@ -83,8 +99,11 @@ class Mame(Observable):
                 rom['manufacturer'] = line[16:-16]
             elif line[2:9] == "<driver":
                 rom = dict(rom.items() + {k: v for k, v in (part.replace('"', '').split('=') for part in line[10:].strip('<>"\/\n').split(' '))}.items())
+            if not self._running:
+                break
 
         self.notify_observers(1, 1)
+        self._running = False
         return roms
 
     def play(self, rom_name):
@@ -93,7 +112,7 @@ class Mame(Observable):
         :param rom_name:
         :return:
         """
-        process = subprocess.Popen([self.__mame, '-rompath', self.__rom_path, rom_name], stdout=subprocess.PIPE)
+        process = subprocess.Popen([self._mame, '-rompath', self._rom_path, rom_name], stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         return stdout
 
@@ -102,7 +121,7 @@ class Mame(Observable):
         Retrieve MAME version
         :return:
         """
-        process = subprocess.Popen([self.__mame, '-?'], stdout=subprocess.PIPE)
+        process = subprocess.Popen([self._mame, '-?'], stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         results = re.search('v0.(\d{3}) ', stdout.splitlines()[0])
 
@@ -113,7 +132,7 @@ class Mame(Observable):
         Return the total ROM count
         :return:
         """
-        params = [self.__mame, '-rompath', self.__rom_path, '-listfull']
+        params = [self._mame, '-rompath', self._rom_path, '-listfull']
         process = subprocess.Popen(params, stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         return len(stdout.split('\n')) - 1
@@ -123,7 +142,8 @@ class Mame(Observable):
         Return a list of the ROM files in the MAME rom directory
         :return:
         """
-        rom_files = os.listdir(self.__rom_path)
+        self._running = True
+        rom_files = os.listdir(self._rom_path)
         valid_roms = []
         rom_count = 0
         for rom_file in rom_files:
@@ -133,7 +153,10 @@ class Mame(Observable):
                 valid_roms.append(rom_file[:-4])
             self.notify_observers(rom_count, len(rom_files))
             rom_count += 1
+            if not self._running:
+                break
 
         self.notify_observers(1, 1)
 
+        self._running = False
         return set.intersection(set(valid_roms), set(self.list_rom_names()))

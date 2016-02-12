@@ -5,6 +5,7 @@ import logging
 from frontside import OptionsParser
 from frontside import ConfigParser
 from frontside import Frontside
+from frontside import GlobalObjects
 
 
 __description__ = 'Frontside. M.A.M.E. Front end using pyGame. Good for frame buffers.'
@@ -51,6 +52,8 @@ def main():
 
     application = Frontside(config)
     application.start()
+    if GlobalObjects.scanner is not None and GlobalObjects.scanner.get_status():
+        GlobalObjects.scanner.halt()
     return EXIT_OK
 
 if __name__ == '__main__':

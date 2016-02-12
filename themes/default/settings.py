@@ -42,6 +42,13 @@ settings = {
             'position': (1, 5),
             'key': pygame.K_d,
             'text': 'ROM Maintenance'
+        },
+        {
+            'type': 'progress_bar',
+            'name': 'rom_progress',
+            'dimensions': (10, 1),
+            'position': (1, 11),
+            'text': 'Scanner Progress'
         }
     ]
 }

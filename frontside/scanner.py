@@ -11,10 +11,18 @@ class Scanner(Observable, threading.Thread):
         self._config = config
         self._mame = None
         self._connection = None
+        self._running = False
         Observable.__init__(self)
         threading.Thread.__init__(self)
 
+    def halt(self):
+        self._mame.halt()
+
+    def get_status(self):
+        return self._mame.get_status()
+
     def run(self):
+        self._running = True
         """
         1. Get a list of actual ROM files in the rom_path
         2. Filter against the ROM names from MAME
@@ -30,12 +38,12 @@ class Scanner(Observable, threading.Thread):
         self._mame = Mame(self._config)
         self._connection = sqlite3.connect(self._config['frontside']['database_path'])
 
-        found_roms = self._mame.list_rom_files()
-        for rom in found_roms:
-            print self._mame.list_xml(rom)
+        # self._mame.register_observer(self)
+        # found_roms = self._mame.list_rom_files()
 
         self._mame.register_observer(self)
-        print self._mame.list_xml()
+        self._mame.list_xml()
+
         # roms = mame.list_full()
         # roms = mame.list_xml()
         # repository = RomRepository(self._connection)
@@ -54,6 +62,7 @@ class Scanner(Observable, threading.Thread):
         # roms = self.__mame.list_xml()
         # repository = RomRepository(self.__connection)
         # repository.add_rom_details_from_array(roms)
+        self._running = False
 
     def notify(self, observable, current_line, line_count):
         self.notify_observers(current_line, line_count)

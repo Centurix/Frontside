@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 from screen import Screen
-from ..mame import Mame
-# from ..repositories import RomRepository
 from ..scanner import Scanner
-import sys
-import time
+from ..global_objects import GlobalObjects
 
 
 class Settings(Screen):
@@ -14,19 +11,15 @@ class Settings(Screen):
         super(self.__class__, self).__init__(config, connection)
 
     def start_scanner(self, params):
-        print "Starting the scanner"
-        scanner = Scanner(self._config)
-        scanner.register_observer(self)
-        scanner.start()
+        GlobalObjects.scanner = Scanner(self._config)
+        GlobalObjects.scanner.register_observer(self)
+        GlobalObjects.scanner.start()
 
     def redefine_keys(self, params):
         print "Redefining the keys"
         # TODO: Redefine some key
 
     def notify(self, observable, current_line, line_count):
-        percent = float(current_line) / line_count * 100
-        done = ('#' * int(float(50) / 100 * percent)) + ('-' * 50)
-        sys.stdout.write('\r|%s| (%.2f%%)' % (done[:50], percent))
-        sys.stdout.flush()
-
-        time.sleep(.000001)
+        progress_bar = self.find_control('rom_progress')
+        progress_bar.set_total(line_count)
+        progress_bar.set_current(current_line)
